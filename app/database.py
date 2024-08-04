@@ -1,5 +1,5 @@
 from motor.motor_asyncio import AsyncIOMotorClient
-import aioredis
+import redis.asyncio as redis
 
 
 MONGO_DETAILS = "mongodb://localhost:27017"
@@ -9,7 +9,7 @@ client = AsyncIOMotorClient(MONGO_DETAILS)
 database = client.messages
 message_collection = database.get_collection("messages")
 
-redis = None
+redis_client = None
 
 
 async def get_database():
@@ -17,7 +17,7 @@ async def get_database():
 
 
 async def get_redis():
-    global redis
-    if not redis:
-        redis = await aioredis.create_redis_pool(REDIS_DETAILS)
-    return redis
+    global redis_client
+    if not redis_client:
+        redis_client = await redis.from_url(REDIS_DETAILS)
+    return redis_client
